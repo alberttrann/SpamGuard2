@@ -1,5 +1,4 @@
-# evaluate_all_architectures.py (Final Corrected Version)
-
+# evaluate_all_architectures.py 
 import os
 import sys
 import pandas as pd
@@ -12,7 +11,6 @@ from tqdm import tqdm
 import time
 import joblib
 
-# --- Robust Pathing and Imports ---
 PROJECT_ROOT_PATH = os.getcwd()
 if PROJECT_ROOT_PATH not in sys.path: sys.path.append(PROJECT_ROOT_PATH)
 from backend.utils import preprocess_tokenizer
@@ -22,7 +20,6 @@ from imblearn.over_sampling import SMOTE
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
-# --- THE FIX: Add the missing imports ---
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 
@@ -31,14 +28,14 @@ ORIGINAL_DATA_PATH = r"C:\Users\alberttran\Downloads\2cls_spam_text_cls_original
 CURRENT_DATA_PATH = os.path.join(PROJECT_ROOT_PATH, 'backend', 'data', '2cls_spam_text_cls.csv')
 EVALUATION_DATA_PATH = os.path.join(PROJECT_ROOT_PATH, "evaluation_data.txt")
 
-# --- Global Components (Load Once) ---
+# --- Global Components ---
 print("Loading sentence-transformer model (intfloat/multilingual-e5-base)...")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 TOKENIZER = AutoTokenizer.from_pretrained("intfloat/multilingual-e5-base")
 TRANSFORMER_MODEL = AutoModel.from_pretrained("intfloat/multilingual-e5-base").to(DEVICE).eval()
 print(f"Model loaded on {DEVICE}.")
 
-# --- Helper Functions for Vectorization ---
+# Vectorization
 def average_pool(states, mask): return (states * mask[..., None]).sum(1) / mask.sum(-1)[..., None]
 def get_embeddings(texts: list, prefix: str, batch_size: int = 32) -> np.ndarray:
     all_embeds = []
@@ -50,7 +47,7 @@ def get_embeddings(texts: list, prefix: str, batch_size: int = 32) -> np.ndarray
         all_embeds.append(F.normalize(embeds, p=2, dim=1).cpu().numpy())
     return np.vstack(all_embeds)
 
-# --- Classifier Definitions ---
+# Classifier Definitions 
 
 class Classifier_kNN_Only:
     def __init__(self, db_messages, db_labels, faiss_index, k=5):
@@ -97,7 +94,7 @@ class Classifier_Hybrid:
             prediction = "spam"; confidence = spam_prob; model_used = "MultinomialNB"
             end_time = time.perf_counter()
         else:
-            # Stage 2: Deep Analysis with k-NN (re-measure time for just this part)
+            # Stage 2: Deep Analysis with k-NN
             knn_result = self.knn_classifier.classify(message)
             prediction = knn_result["prediction"]; confidence = knn_result["confidence"]
             model_used = "Vector Search (k-NN)"; end_time = time.perf_counter()
@@ -204,4 +201,5 @@ if __name__ == "__main__":
     run_full_evaluation(CURRENT_DATA_PATH, "Current Augmented Dataset")
     print("\n" + "="*80)
     print("  ALL EXPERIMENTS COMPLETE")
+
     print("="*80)
