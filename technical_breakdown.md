@@ -57,7 +57,6 @@ The intended role of the Stage 2 classifier was to act as a "deep analysis" expe
 4.  **Prediction:** The final prediction is made via a simple majority vote among the labels of these `k` neighbors.
 
 This is a powerful but computationally expensive process. The initial architecture's critical failure was that the conditions for this fallback—an uncertain prediction from Stage 1—were never met due to the flawed and overconfident nature of the `GaussianNB` classifier. The "expert" was never consulted.
-Excellent. Let's proceed to the architectural evolution.
 
 ---
 
@@ -136,7 +135,6 @@ This new reliability is what makes the hybrid architecture functional. The triag
 *   Crucially, when it encounters a truly ambiguous message, it is now capable of producing a "middle-ground" probability like `0.60`, correctly identifying that it is uncertain.
 
 This act of "knowing what it doesn't know" is the key. By correctly escalating these genuinely difficult cases to the semantically powerful but computationally expensive k-NN Vector Search, the system achieves a synergistic effect. It combines the efficiency of the `MultinomialNB` model (which, as benchmarks show, handles the majority of cases) with the peak accuracy of the Vector Search, resulting in a final system that approaches the accuracy of the costly k-NN model at a fraction of the average computational cost.
-Excellent. Now for the final act: a deep-dive analysis of the experimental results.
 
 ---
 
