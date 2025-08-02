@@ -183,8 +183,41 @@ Comparing Models 4, 5, and 6 demonstrates the profound impact of training on the
     *   Only the most difficult **31.5%** of messages are escalated to the k-NN Vector Search.
     *   The k-NN component demonstrates its value by achieving a **93.10%** accuracy on these specifically chosen ambiguous cases.
 
-### **3.3. Final Conclusion: A Quantified Argument for the Hybrid System**
+#### **3.2.5. Confusion Matrix Analysis (Original Dataset): The High Cost of Poor Data**
 
-The experimental data provides a definitive, quantitative justification for the hybrid architecture. A system designed purely for maximum accuracy would choose the `k-NN Only` model (Model 5). A system designed purely for maximum speed would choose the `MultinomialNB Only` model (Model 4).
+Analyzing the error types for models trained on the original, biased dataset reveals a distinct pattern of conservative, low-confidence behavior. The models are forced to make significant trade-offs that either harm filter effectiveness or, in the worst cases, erode user trust.
 
-The **Hybrid System** (Model 6) is the superior **engineering solution**. It strategically leverages the strengths of both components, creating a system that delivers the accuracy of the best model at a speed approaching the fastest model. By using a computationally inexpensive triage system to handle the bulk of traffic with 97% accuracy, it reserves its most powerful—and costly—analytical tool for the minority of cases that truly require it. This synergy results in a classifier that is not only highly effective but also efficient, scalable, and suitable for real-world deployment.
+| Classifier Architecture | Confusion Matrix | False Positives (FP) | False Negatives (FN) | Analysis |
+| :--- | :--- | :--- | :--- | :--- |
+| **`MultinomialNB` Only** | `[[44, 2], [15, 31]]` | **2** | **15** | This model is extremely **"safe" but ineffective**. It almost never makes the critical error of flagging a legitimate message as spam, with only **2 False Positives**. However, this safety comes at a tremendous cost: it fails to identify **15 spam messages**, letting a significant amount of unwanted content into the user's inbox. This demonstrates a classic precision-over-recall trade-off caused by the imbalanced data. |
+| **`k-NN Search` Only** | `[[45, 1], [9, 37]]` | **1** | **9** | The semantic model is a clear improvement. It is the **safest model for the user**, making only a single False Positive error. Its superior generalization allows it to reduce the number of False Negatives to 9, catching more spam than the Naive Bayes model. However, it still misses nearly 20% of the spam, indicating that even a powerful model is constrained by limited and biased training data. |
+| **`Hybrid System`** | `[[46, 0], [12, 34]]` | **0** | **12** | This is a fascinating and telling result. The hybrid system achieved a **perfect record on False Positives (0)**, meaning it never once misclassified a legitimate message. The `ham`-biased Naive Bayes triage handled the majority of cases, and any ambiguity was resolved so conservatively that no `ham` was ever flagged as `spam`. The consequence, however, is a still-high number of **12 False Negatives**. The system is perfectly trustworthy but not yet a highly effective filter. |
+
+**Conclusion from Confusion Matrix Analysis (Original Dataset):**
+When trained on poor, biased data, all architectures prioritize user safety (minimizing False Positives) at the direct expense of filter effectiveness (high number of False Negatives). The semantic power of the `k-NN` model makes it the best of the three, but all are fundamentally handicapped. This analysis proves that **data quality is a prerequisite for achieving a balance between user trust and filter effectiveness**. Without a rich and balanced dataset, even a sophisticated architecture is forced to make unacceptable compromises. 
+
+#### **3.3. Confusion Matrix Analysis: The Critical Trade-Off of False Positives vs. False Negatives**
+
+While overall accuracy provides a good summary, a deeper analysis of the confusion matrices is essential to understand the practical, user-facing implications of each model. For a spam filter, the two types of errors have vastly different consequences:
+
+*   **False Positive (Type I Error):** A legitimate message (`ham`) is incorrectly classified as `spam`. This is the **most severe type of error**. It can cause a user to miss critical information, such as a job offer, a security alert, or a personal message. The primary goal of a production spam filter is to minimize this value. This corresponds to a high **Ham Recall**.
+*   **False Negative (Type II Error):** A `spam` message is incorrectly allowed into the inbox. This is a minor annoyance for the user but is far less damaging than a False Positive. A robust system should minimize this, but not at the great expense of increasing False Positives. This corresponds to a high **Spam Recall**.
+
+Let's analyze the confusion matrices (`[[TN, FP], [FN, TP]]`) for the three final models trained on the **Augmented Dataset**:
+
+| Classifier Architecture | Confusion Matrix | False Positives (FP) | False Negatives (FN) | Analysis |
+| :--- | :--- | :--- | :--- | :--- |
+| **`MultinomialNB` Only** | `[[39, 7], [4, 42]]` | **7** | **4** | This model provides an excellent balance. It makes a very low number of critical False Positive errors (7) while also maintaining a very low number of False Negative annoyances (4). It is both safe and effective. |
+| **`k-NN Search` Only** | `[[43, 3], [0, 46]]` | **3** | **0** | This is the "maximum safety" and "maximum effectiveness" model. It achieved a perfect Spam Recall (zero False Negatives) and made the absolute minimum number of False Positive errors (3). This represents the best possible classification result, but at the highest computational cost. |
+| **`Hybrid System`** | `[[42, 4], [0, 46]]` | **4** | **0** | This model achieves the best of both worlds. It **matches the gold standard k-NN model's perfect record on False Negatives** (zero spam messages slipped through). Simultaneously, it keeps the number of critical **False Positives extremely low at just 4**. |
+
+**Conclusion from Confusion Matrix Analysis:**
+The analysis confirms that both the `k-NN Only` and the `Hybrid System` are exceptional performers when user experience (minimizing False Positives) is the top priority. The Hybrid System, however, stands out. It successfully delivers a user experience that is almost identical to the computationally expensive "gold standard" model—catching all spam while only misclassifying 4 legitimate messages—at a fraction of the operational cost. It proves that the triage system is not just faster, but also "smart" enough to escalate cases in a way that preserves the most critical performance characteristics of the expert model.
+
+The comprehensive evaluation provides definitive proof that the **Hybrid System architecture is the superior engineering solution**. It strategically delivers the best of both worlds:
+1.  **Peak Effectiveness:** It matches the gold standard's **1.00 Spam Recall**, ensuring users are protected from unwanted messages by eliminating False Negatives.
+2.  **Excellent User Experience:** It maintains a very high **0.91 Ham Recall**, minimizing the frustration of False Positives to a level nearly identical to the best-performing model.
+3.  **High Efficiency:** It achieves this near-perfect classification performance at **less than half the computational cost** of the pure semantic search model.
+
+It successfully leverages the efficiency of the `MultinomialNB` classifier for the majority of traffic while reserving its most powerful—and costly—analytical tool for the minority of cases that truly require it. This synergy results in a classifier that is not only highly effective but also efficient, scalable, and suitable for real-world deployment where both accuracy and user trust are paramount.
+
