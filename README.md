@@ -1,5 +1,9 @@
 Version 1 using GaussianNB is here: https://github.com/alberttrann/SpamGuard
 
+To use SpamGuard, from the root directory, type uvicorn backend.main:app --reload, then in a new terminal, move to dashboard dir with cd dashboard, and type streamlit run app.py
+
+If there is any model-related issue, consider deleting the models dir, and type python -m backend.train_nb for retraining and creating a fresh model dir, before running SpamGuard
+
 For a more thorough technical breakdown, check out technical_breakdown.md in this repo. Below is just a quick overview on the performance improvement:
 
 Raw benchmark results from evaluate_all_architecture.py:
