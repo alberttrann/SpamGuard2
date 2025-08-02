@@ -226,6 +226,8 @@ It successfully leverages the efficiency of the `MultinomialNB` classifier for t
 
 To contextualize the performance of our specialized SpamGuard Hybrid System, a final suite of benchmarks was conducted against a diverse range of general-purpose Large Language Models (LLMs). These models, varying in parameter count from 500 million to 671 billion, were evaluated on the same hold-out test set in a zero-shot classification task. The objective was to determine the trade-offs between a small, fine-tuned, specialized system and the raw inferential power of modern foundation models.
 
+For raw benchmarks and eval scripts, check out raw_llm_bench.md, evaluate_fptai.py and evaluate_lm_studio.py in this repo
+
 **Master Benchmark Table: All Architectures**
 
 | Model | Architecture | Training Data | Overall Accuracy | Avg. Time (ms) | Ham Recall | Spam Recall | Spam Precision |
