@@ -5,8 +5,6 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 import string
 
-# --- NLTK and Preprocessing Setup ---
-# This code runs once when the module is first imported.
 nltk.download('stopwords', quiet=True)
 nltk.download('punkt', quiet=True)
 
@@ -25,4 +23,5 @@ def preprocess_tokenizer(text: str) -> list:
     filtered_and_stemmed_tokens = [
         stemmer.stem(token) for token in tokens if token.isalpha() and token not in english_stop_words
     ]
+
     return filtered_and_stemmed_tokens
