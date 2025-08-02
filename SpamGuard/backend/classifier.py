@@ -10,18 +10,14 @@ import pandas as pd
 from tqdm import tqdm
 import os
 
-# --- THE FIX: Use a relative import for the shared utility module ---
 from .utils import preprocess_tokenizer
 
-# The absolute path logic is still good and robust.
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BACKEND_DIR, '..'))
 MODELS_DIR = os.path.join(PROJECT_ROOT, 'models')
 DATA_CSV_PATH = os.path.join(BACKEND_DIR, 'data', '2cls_spam_text_cls.csv')
 
 class SpamGuardClassifier:
-    # ... The rest of this file is actually correct from the last fix ...
-    # No further changes are needed inside the class itself.
     def __init__(self, model_path_dir=MODELS_DIR):
         self._load_all_components(model_path_dir)
     def _load_all_components(self, model_path_dir):
@@ -61,4 +57,5 @@ class SpamGuardClassifier:
             if spam_prob < 0.15: return {"prediction": "ham", "confidence": 1 - spam_prob, "model": "MultinomialNB", "evidence": None}
             if spam_prob > 0.85: return {"prediction": "spam", "confidence": spam_prob, "model": "MultinomialNB", "evidence": None}
         k=5; q_emb = self._get_embeddings([text], "query", 1); s, i = self.faiss_index.search(q_emb, k); n_l = [self.all_labels[x] for x in i[0]]; p = max(set(n_l),key=n_l.count); c = n_l.count(p)/k; e=[{"similar_message":self.all_messages[idx],"label":self.all_labels[idx],"similarity_score":float(s[0][j])} for j,idx in enumerate(i[0])]
+
         return {"prediction":p,"confidence":c,"model":"Vector Search (k-NN)","evidence":e}
