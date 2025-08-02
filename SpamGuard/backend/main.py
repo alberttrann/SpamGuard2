@@ -6,7 +6,6 @@ from fastapi.responses import StreamingResponse
 import asyncio
 import json
 
-# --- THE FIX: Use relative imports for all local modules ---
 from .classifier import SpamGuardClassifier
 from . import database
 from . import llm_generator
@@ -19,7 +18,6 @@ def startup_event():
     database.init_db()
     app.state.classifier = SpamGuardClassifier()
 
-# The rest of the file is unchanged...
 class Message(BaseModel): text: str
 class Feedback(BaseModel): message: str; correct_label: str
 class LLMRequest(BaseModel): provider: str; model: str; api_key: str | None = None; label_to_generate: str | None = None
@@ -63,4 +61,5 @@ async def generate_data_stream(req: LLMRequest, raw_request: Request):
                     await asyncio.sleep(0.1)
                 yield "data: Pausing for 1.5 seconds...\n\n"; await asyncio.sleep(1.5)
             except Exception as e: error_message = f"An error occurred: {e}"; print(error_message); yield f"data: {error_message}\n\n"; break
+
     return StreamingResponse(event_stream(), media_type="text/event-stream")
