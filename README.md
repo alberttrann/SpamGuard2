@@ -186,16 +186,16 @@ weighted avg       0.96      0.96      0.96        92
 ```
 The following table summarizes the performance of all key architectures on a consistent hold-out test set of 92 messages.
 
-| Model ID | Classifier Architecture | Training Data | Overall Accuracy | Total Time (s) | Avg. Time / Msg (ms) | Spam Recall | Spam Precision | Spam F1-Score |
+| Model ID | Classifier Architecture | Training Data | Overall Accuracy | Total Time (s) | Avg. Time / Msg (ms) | Spam Recall | Spam Precision | Spam F1-Score | Relative Speed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | `GaussianNB` (Hybrid) | Original (Biased) | 59.78% | N/A | N/A | 0.61 | 0.60 | 0.60 |
-| **2** | `MultinomialNB` Only | Original (Biased) | 81.52% | **0.380 s** | **4.13 ms** | 0.67 | **0.94** | 0.78 |
-| **3** | `k-NN Vector Search` Only | Original (Biased) | 88.04% | 1.983 s | 21.56 ms | 0.78 | 0.97 | 0.87 |
-| **4** | **`Hybrid System`** | Original (Biased) | 86.96% | 0.703 s | 7.64 ms | 0.74 | **1.00** | 0.85 |
+| **1** | `GaussianNB` (Hybrid) | Original (Biased) | 59.78% | N/A | N/A | 0.61 | 0.60 | 0.60 | N/A |
+| **2** | `MultinomialNB` Only | Original (Biased) | 81.52% | **0.380 s** | **4.13 ms** | 0.67 | **0.94** | 0.78 | **5.2x** |
+| **3** | `k-NN Vector Search` Only | Original (Biased) | 88.04% | 1.983 s | 21.56 ms | 0.78 | 0.97 | 0.87 | 1x |
+| **4** | **`Hybrid System`** | Original (Biased) | 86.96% | 0.703 s | 7.64 ms | 0.74 | **1.00** | 0.85 | 2.8x |
 | | | | | | | | | |
-| **5** | `MultinomialNB` Only | **Augmented** | 88.04% | **0.362 s** | **3.93 ms** | **0.91** | 0.86 | 0.88 |
-| **6** | `k-NN Vector Search` Only | **Augmented** | **96.74%** | 1.550 s | 16.85 ms | **1.00** | 0.94 | **0.97** |
-| **7**| **`Hybrid System`** | **Augmented** | 95.65% | 0.695 s | 7.56 ms | **1.00** | 0.92 | 0.96 |
+| **5** | `MultinomialNB` Only | **Augmented** | 88.04% | **0.362 s** | **3.93 ms** | **0.91** | 0.86 | 0.88 | **4.3x** |
+| **6** | `k-NN Vector Search` Only | **Augmented** | **96.74%** | 1.550 s | 16.85 ms | **1.00** | 0.94 | **0.97** | 1x |
+| **7**| **`Hybrid System`** | **Augmented** | 95.65% | 0.695 s | 7.56 ms | **1.00** | 0.92 | 0.96 | 2.2x |
 
 *(Total and Average times are for classifying all 92 messages in the test set.)*
 
