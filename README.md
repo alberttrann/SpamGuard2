@@ -1,4 +1,4 @@
-Version 1 using GaussianNB is here: github.com/alberttran/SpamGuard
+Version 1 using GaussianNB is here: https://github.com/alberttrann/SpamGuard
 
 For a more thorough technical breakdown, check out technical_breakdown.md in this repo. Below is just a quick overview on the performance improvement:
 
