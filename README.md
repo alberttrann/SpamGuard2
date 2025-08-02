@@ -1,3 +1,5 @@
+For a more thorough technical breakdown, check out technical_breakdown.md in this repo. Below is just a quick overview on the performance improvement:
+
 Raw benchmark results from evaluate_all_architecture.py:
 ```
 (.venv) PS E:\AIO\SpamGuard> python e:\AIO\SpamGuard\evaluate_all_architecture.py
@@ -202,7 +204,7 @@ The following table summarizes the performance of all key architectures on a con
 
 ---
 
-### **In-Depth Analysis and Conclusions**
+### **Brief Analysis**
 
 #### 1. Data Augmentation is Universally Beneficial
 
@@ -238,3 +240,4 @@ The results for the `Hybrid System` trained on the augmented data (Model 6) tell
     *   This is a phenomenal result. It shows that the cases the Naive Bayes model *was* confident about, it was almost always correct. This validates the triage thresholds (`<0.15` and `>0.85`) and proves that the first stage is a reliable gatekeeper.
 
 **Final Conclusion:** This comprehensive evaluation provides definitive proof that the **Hybrid System architecture is the superior engineering solution**. It successfully combines the extreme speed of the `MultinomialNB` classifier for clear-cut cases with the semantic power of the `k-NN Vector Search` for ambiguous ones. The result is a system that achieves near-perfect accuracy at more than double the speed of a purely semantic model, making it a robust, scalable, and highly effective solution for real-world spam detection.
+
