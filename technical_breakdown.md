@@ -221,3 +221,67 @@ The comprehensive evaluation provides definitive proof that the **Hybrid System 
 
 It successfully leverages the efficiency of the `MultinomialNB` classifier for the majority of traffic while reserving its most powerful—and costly—analytical tool for the minority of cases that truly require it. This synergy results in a classifier that is not only highly effective but also efficient, scalable, and suitable for real-world deployment where both accuracy and user trust are paramount.
 
+
+#### **3.4. Comparative Analysis: The Specialized Hybrid System vs. General-Purpose LLMs**
+
+To contextualize the performance of our specialized SpamGuard Hybrid System, a final suite of benchmarks was conducted against a diverse range of general-purpose Large Language Models (LLMs). These models, varying in parameter count from 500 million to 671 billion, were evaluated on the same hold-out test set in a zero-shot classification task. The objective was to determine the trade-offs between a small, fine-tuned, specialized system and the raw inferential power of modern foundation models.
+
+**Master Benchmark Table: All Architectures**
+
+| Model | Architecture | Training Data | Overall Accuracy | Avg. Time (ms) | Ham Recall | Spam Recall | Spam Precision |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **SpamGuard** | **Hybrid System** | **Augmented** | **95.65%** | **7.56** | **0.91** | **1.00** | **0.92** |
+| **SpamGuard** | `k-NN` Only | Augmented | 96.74% | 16.85 | 0.93 | 1.00 | 0.94 |
+| **SpamGuard** | `MultinomialNB` Only | Augmented | 88.04% | 3.93 | 0.85 | 0.91 | 0.86 |
+| | | | | | | | |
+| **Cloud LLM**| DeepSeek-V3 (671B) | Zero-Shot (API) | **100%** | 421.04 | **1.00** | **1.00** | **1.00** |
+| **Cloud LLM**| Qwen2.5-7B-Instruct| Zero-Shot (API) | **100%** | 179.45 | **1.00** | **1.00** | **1.00** |
+| | | | | | | | |
+| **Local LLM**| `phi-4-mini` (3.8B) | Zero-Shot (Q8) | 98.91% | 678.71 | **1.00** | 0.98 | **1.00** |
+| **Local LLM**| `exaone` (2.4B) | Zero-Shot (Q8) | 98.91% | 174.27 | **1.00** | 0.98 | **1.00** |
+| **Local LLM**| `qwen2.5` (3B) | Zero-Shot (Q8) | 97.83% | 133.59 | 0.98 | 0.98 | 0.98 |
+| **Local LLM**| `gemma-3` (4B) | Zero-Shot (Q8) | 97.83% | **2688.20** | 0.96 | **1.00** | 0.96 |
+| **Local LLM**| `gemma-2` (2B) | Zero-Shot (Q8) | 96.74% | 157.09 | 0.98 | 0.96 | 0.98 |
+| | | | | | | | |
+| **Local LLM**| `llama-3.2` (3B) | Zero-Shot (Q8) | 88.04% | 126.27 | **1.00** | 0.76 | **1.00** |
+| **Local LLM**| `gemma-3` (1B) | Zero-Shot (Q8) | 75.00% | 101.08 | 0.83 | 0.67 | 0.79 |
+| **Local LLM**| `exaone` (1.2B) | Zero-Shot (Q8) | 63.04% | 122.84 | 0.30 | 0.96 | 0.58 |
+| **Local LLM**| `qwen2.5` (1.5B) | Zero-Shot (Q8) | 64.13% | 93.47 | 0.28 | **1.00** | 0.58 |
+| **Local LLM**| `llama-3.2` (1B) | Zero-Shot (Q8) | 53.26% | 72.10 | 0.07 | **1.00** | 0.52 |
+| **Local LLM**| `qwen2.5` (0.5B) | Zero-Shot (Q8) | 57.61% | 108.75 | 0.96 | 0.20 | 0.82 |
+| **Local LLM**| `smollm2` (1.7B) | Zero-Shot (Q8) | 50.00% | 72.64 | 0.00 | **1.00** | 0.50 |
+
+---
+
+#### **3.4.1. The Performance Ceiling: Large-Scale Foundation Models**
+
+The results from the FPT AI Cloud API are unequivocal: state-of-the-art foundation models like **DeepSeek-V3 (671B)** and **Qwen2.5-7B-Instruct** achieve **perfect 100% accuracy** on our test set. Their immense scale and sophisticated reasoning capabilities allow them to correctly classify every message in a zero-shot setting. This establishes the theoretical "perfect score" for this specific task.
+
+However, this perfection comes at the highest operational cost. With average latencies of **~180-420 ms**, they are **23x to 55x slower** than our specialized Hybrid System. This makes them unsuitable for applications requiring real-time, low-latency processing of high-volume message streams.
+
+#### **3.4.2. The Emergence of a "Sweet Spot": Mid-Sized Local LLMs (2B-4B Parameters)**
+
+The locally-hosted models tested via LM Studio reveal a fascinating trend. A clear performance tier emerges in the **2B to 4B parameter range**. Models like `phi-4-mini-3.8b`, `exaone-3.5-2.4b`, `qwen2.5-3b`, and `gemma-2/3-it` consistently achieve accuracy in the **97-99%** range, nearly matching the large-scale cloud models.
+
+*   **Key Insight:** These models are powerful enough to have robust instruction-following capabilities and a strong grasp of the nuances of spam language. They correctly balance Ham Recall and Spam Recall, making very few errors of either type.
+*   **Latency Consideration:** While highly accurate, their performance cost is still significant. Even the fastest of this tier (`qwen2.5-3b` at 133 ms) is **17x slower** than our Hybrid System. The `gemma-3-4b-it` model, despite its high accuracy, was exceptionally slow in this test, highlighting that parameter count is not the only factor in performance; architecture and quantization also play a major role.
+
+#### **3.4.3. The "Instruction-Following" Failure Point: Small-Sized LLMs (<2B Parameters)**
+
+A dramatic performance collapse is observed in models with fewer than ~2 billion parameters. Models like `llama-3.2-1b`, `qwen2.5-1.5b`, `exaone-1.2b`, and `smollm2-1.7b` perform poorly, with accuracies ranging from **50% to 64%**.
+
+*   **Analysis of Failure Mode:** Their confusion matrices reveal a consistent pattern: an extremely low Ham Recall (e.g., `smollm2` at 0%, `llama-3.2-1b` at 7%). This is not a classification failure; it is an **instruction-following failure**. These models are not sophisticated enough to reliably adhere to the system prompt: "Respond with ONLY the single word 'spam' or 'ham'." Instead, they tend to default to a single response (in this case, "spam") for almost every input. Their poor accuracy is a result of this "mode collapse," not a nuanced misjudgment of the text's content. The `gemma-3-1b-it` model is a notable exception, achieving a respectable 75% accuracy, suggesting it has a stronger instruction-following capability for its size.
+
+#### **3.5. Final Conclusion: The Specialized System's Triumph of Efficiency**
+
+This comprehensive benchmark analysis provides the definitive argument for the SpamGuard Hybrid System. While massive, state-of-the-art LLMs can achieve perfect accuracy, they do so at an operational cost that is orders of magnitude higher.
+
+Our **SpamGuard Hybrid System**, at **95.65% accuracy**, successfully **outperforms every tested LLM under the 2B parameter mark** and performs competitively with many models in the 2-4B range.
+
+Most critically, it delivers this high-tier accuracy with an average latency of just **7.56 milliseconds**. This is:
+*   **23x faster** than the 100% accurate `Qwen2.5-7B-Instruct`.
+*   **17x faster** than the 98% accurate `qwen2.5-3b-instruct`.
+*   **An astonishing 355x faster** than the 98% accurate `gemma-3-4b-it`.
+
+The SpamGuard project successfully demonstrates that a well-architected, specialized system leveraging domain-specific data and a hybrid of classical and modern techniques can achieve performance comparable to general-purpose models that are billions of parameters larger, while operating at a tiny fraction of the computational cost. It is a testament to the enduring value of efficient system design in the era of large-scale AI.
+
