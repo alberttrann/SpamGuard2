@@ -145,8 +145,6 @@ Excellent. Now for the final act: a deep-dive analysis of the experimental resul
 The final phase of the project involved a comprehensive suite of experiments designed to quantitatively measure the performance and computational efficiency of each architectural iteration. By testing three distinct classifier architectures (`MultinomialNB`-only, `k-NN Vector Search`-only, and the final `Hybrid System`) on both the original biased dataset and the LLM-augmented dataset, we can dissect the specific contributions of model selection, data quality, and system design to the final outcome.
 
 #### **Master Benchmark Table: Accuracy and Performance**
-The following table summarizes the performance of all key architectures on a consistent hold-out test set of 92 messages.
----
 
 | Model ID | Classifier Architecture | Training Dataset | Overall Accuracy | Total Time (s) | Avg. Time / Msg (ms) | **Relative Speed** | Spam Recall | Spam Precision | Spam F1-Score |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
