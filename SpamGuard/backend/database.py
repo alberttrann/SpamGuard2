@@ -1,14 +1,12 @@
-# backend/database.py (Final, Path-Corrected Version)
+# backend/database.py 
 
 import sqlite3
 import pandas as pd
 import os
 import csv
 
-# --- THE DEFINITIVE PATH FIX ---
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BACKEND_DIR, 'data') # The data directory
-
+DATA_DIR = os.path.join(BACKEND_DIR, 'data') 
 DB_PATH = os.path.join(DATA_DIR, "spamguard_feedback.db")
 CSV_PATH = os.path.join(DATA_DIR, "2cls_spam_text_cls.csv")
 
@@ -81,4 +79,5 @@ def enrich_main_dataset():
         return len(df_feedback)
     except Exception as e:
         print(f"Error during dataset enrichment: {e}")
+
         raise e
