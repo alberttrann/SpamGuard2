@@ -203,30 +203,37 @@ The following table summarizes the performance of all key architectures on a con
 
 ### **In-Depth Analysis and Conclusions**
 
-#### 1. Architectural Choice is the Primary Driver of Performance
+#### 1. Data Augmentation is Universally Beneficial
 
-The most significant performance leap came from abandoning the mathematically inappropriate `GaussianNB` model (Model 1, 59.78% Acc) in favor of `MultinomialNB` (Model 2, 81.52% Acc) on the same biased dataset. This **+21.74%** gain underscores that selecting the correct model for the data's characteristics is the most critical decision.
+Across all three architectures, training on the **Augmented Dataset** resulted in superior performance.
+*   The `MultinomialNB` model's accuracy jumped from 81.52% to **88.04%**, crucially improving its Spam Recall from a poor 67% to an excellent 91%.
+*   The `k-NN` model's accuracy rose from 88.04% to a near-perfect **96.74%**, achieving a flawless 100% Spam Recall.
+*   The `Hybrid System` saw the most dramatic improvement, leaping from 86.96% to **95.65%** accuracy, nearly matching the pure k-NN system.
+*   **Conclusion:** High-quality, balanced data is the most critical factor for maximizing the potential of any chosen architecture.
 
-#### 2. Data Augmentation Unlocks the Model's Full Potential
+#### 2. The Cost of Peak Accuracy: `k-NN` as the "Glass Cannon"
 
-While architecture provided the biggest initial jump, data quality was key to achieving excellence. Training the `Hybrid System` on the augmented data (Model 7) instead of the biased data (Model 4) pushed its accuracy from 86.96% to **95.65%** and, most importantly, improved its **Spam Recall from a mediocre 74% to a perfect 100%**. Better data allowed the model to be both more accurate and more effective at its core task.
+The `k-NN Only` model consistently delivered the highest accuracy. However, this performance came at a steep and predictable cost in efficiency. With an average prediction time of **17-22 ms**, it is **4 to 5 times slower** than the `MultinomialNB` model. While it represents the "gold standard" for accuracy, its high latency makes it unsuitable as a standalone solution for real-time, high-volume applications.
 
-#### 3. Quantifying the Speed vs. Accuracy Trade-Off
+#### 3. The Efficiency King: `MultinomialNB` as the "Workhorse"
 
-The final comparison between the three architectures on the augmented data provides the clearest picture:
+The `MultinomialNB Only` model was, by a significant margin, the fastest architecture, clocking in at an average of just **~4 ms per prediction**. While its accuracy of 88.04% on the augmented data is very respectable, it clearly leaves a ~9% performance gap compared to the semantic power of the k-NN model. It is a highly efficient but ultimately less intelligent solution.
 
-*   **The Speed King (`MultinomialNB` Only):** At a total time of **0.36 seconds** (~4ms/msg), this model is the undisputed champion of efficiency. However, its 88.04% accuracy leaves a significant performance gap.
+#### 4. The Optimal Solution: The `Hybrid System` as the "Intelligent Engine"
 
-*   **The Accuracy King (`k-NN` Only):** At **96.74% accuracy**, this model is the most intelligent. But this intelligence comes at a steep price: **1.55 seconds** of total prediction time (~17ms/msg), making it over **4 times slower** than the Naive Bayes model.
+The results for the `Hybrid System` trained on the augmented data (Model 6) tell the most compelling story and provide the ultimate justification for the project's design.
 
-*   **The Optimal Engine (`Hybrid System`):** This is where the engineering brilliance lies.
-    *   **Performance:** It achieves **95.65% accuracy**, sacrificing only a single percentage point compared to the Accuracy King. Crucially, it matches the k-NN model's **perfect 1.00 Spam Recall**.
-    *   **Efficiency:** It completes the task in just **0.70 seconds** (~7.6ms/msg). This makes it **2.2 times faster** than the pure k-NN approach.
+*   **Near-Peak Accuracy (95.65%):** The Hybrid System achieved an accuracy nearly identical to the "gold standard" k-NN model, sacrificing only 1% of total accuracy. It successfully caught **100% of spam messages** (1.00 recall), matching the k-NN model's primary strength.
 
-    The detailed usage statistics reveal the secret to its success:
+*   **High Efficiency (7.56 ms/msg):** The system is **more than twice as fast** as the pure k-NN model. This is the critical trade-off. It delivers the performance of the "F1 Race Car" with a much more efficient engine.
+
+*   **Intelligent Triage in Action:** The detailed report reveals *why* it's so efficient:
     *   `MultinomialNB used: 63 times (68.5%)`
     *   `Vector Search (k-NN) used: 29 times (31.5%)`
+    *   The fast, lightweight Naive Bayes model successfully handled **nearly 70%** of the incoming messages on its own. The expensive transformer model was only invoked for the ~30% of cases that were genuinely ambiguous.
 
-    The fast, lightweight `MultinomialNB` model handled over two-thirds of the workload instantly and with a **96.83% accuracy rate** on those triage decisions. The expensive Vector Search was reserved for only the most difficult ~30% of cases, where its semantic power was most needed.
+*   **High Internal Accuracy:**
+    *   `Accuracy of NB Triage: 96.83%`
+    *   This is a phenomenal result. It shows that the cases the Naive Bayes model *was* confident about, it was almost always correct. This validates the triage thresholds (`<0.15` and `>0.85`) and proves that the first stage is a reliable gatekeeper.
 
-**Final Conclusion:** The `Hybrid System` is demonstrably the superior architecture for a production environment. It achieves the accuracy of a state-of-the-art semantic search model while maintaining an operational speed closer to that of a simple classical model. It successfully proves the value of a tiered, confidence-based approach, leveraging the strengths of each component to create a system that is both exceptionally intelligent and highly efficient.
+**Final Conclusion:** This comprehensive evaluation provides definitive proof that the **Hybrid System architecture is the superior engineering solution**. It successfully combines the extreme speed of the `MultinomialNB` classifier for clear-cut cases with the semantic power of the `k-NN Vector Search` for ambiguous ones. The result is a system that achieves near-perfect accuracy at more than double the speed of a purely semantic model, making it a robust, scalable, and highly effective solution for real-world spam detection.
