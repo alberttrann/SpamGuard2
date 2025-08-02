@@ -185,11 +185,6 @@ weighted avg       0.96      0.96      0.96        92
 ================================================================================
 ```
 The following table summarizes the performance of all key architectures on a consistent hold-out test set of 92 messages.
-
-Of course. Here is the final Master Benchmark Table with the "Relative Speed" column added.
-
-The calculation is performed independently for each data category (`Original` and `Augmented`) to provide a fair comparison. The slowest model in each category (`k-NN Vector Search` Only) is set as the baseline (1x speed), and the other models' speeds are calculated relative to it.
-
 ---
 
 | Model ID | Classifier Architecture | Training Dataset | Overall Accuracy | Total Time (s) | Avg. Time / Msg (ms) | **Relative Speed** | Spam Recall | Spam Precision | Spam F1-Score |
@@ -203,8 +198,8 @@ The calculation is performed independently for each data category (`Original` an
 | **6** | `k-NN Vector Search` Only | **Augmented** | **96.74%** | 1.550 s | 16.85 ms | 1x | **1.00** | 0.94 | **0.97** |
 | **7** | **`Hybrid System`** | **Augmented** | 95.65% | 0.695 s | 7.56 ms | **2.2x** | **1.00** | 0.92 | 0.96 |
 
-*(Total and Average times are for classifying all 92 messages in the test set.)*
-*(Relative Speed is calculated against the slowest model, k-NN Only, in each data category.)*
+*(Total and Average times are for classifying all 92 messages in the test set. Relative Speed is calculated against the slowest model, k-NN Only, in each data category.)*
+
 ---
 
 ### **In-Depth Analysis and Conclusions**
